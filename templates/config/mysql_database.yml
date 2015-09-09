@@ -1,0 +1,30 @@
+default: &default
+  adapter: mysql2
+  encoding: utf8
+  host: <%= ENV['CHANGEME_DB_HOST'] %> 
+  pool: 5
+  timeout: 5000
+  user: <%= ENV['CHANGEME_DB_USER'] %>
+  password: <%= ENV['CHANGEME_DB_PASSWORD'] %>
+
+development:
+  <<: *default
+  min_messages: warning
+  database: CHANGEME_DEVELOPMENT
+
+staging:
+  <<: *default
+
+test:
+  <<: *default
+  database: CHANGEME_TEST
+  host: 192.168.59.103
+
+production:
+  <<: *default
+  database: CHANGEME_PRODUCTION
+
+mysql2: &mysql2
+  adapter: mysql2
+  encoding: utf8
+

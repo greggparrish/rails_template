@@ -1,0 +1,26 @@
+default: &default
+  adapter: postgresql
+  encoding: utf8
+  host: <%= ENV['CHANGEME_DB_HOST'] %> 
+  port: 5432
+  pool: 5
+  timeout: 5000
+  user: <%= ENV['CHANGEME_DB_USER'] %>
+  password: <%= ENV['CHANGEME_DB_PASSWORD'] %>
+
+development:
+  <<: *default
+  database: CHANGEME_DEVELOPMENT
+
+staging:
+  <<: *default
+
+test:
+  <<: *default
+  database: CHANGEME_TEST
+  host: 192.168.59.103
+
+production:
+  <<: *default
+  database: CHANGEME_PRODUCTION
+
