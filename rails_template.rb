@@ -1,158 +1,123 @@
-# Set path for template files
-# ==================================================
-template_path = "#{File.dirname(__FILE__)}/templates/"
+RAILS_REQUIREMENT = "~> 5.1.0"
 
-# Gemfile
-# ==================================================
-remove_file 'Gemfile'
-create_file 'Gemfile', File.read(template_path + 'Gemfile')
+def apply_template!
+  assert_minimum_rails_version
+  assert_valid_options
+  add_template_repository_to_source_path
 
-# RVM create gemset
-# ==================================================
-run "cat << EOF >> .rvm-version
-  2.2.0"
-run "cat << EOF >> .rvm-gemset
-  #{app_name}"
-run "rvm gemset create #{app_name}"
-run "rvm gemset use #{app_name}"
-run "gem install bundler"
-run "bundle install"
+  template "Gemfile.tt", :force => true
 
-# Database
-# ==================================================
-remove_file 'config/database.yml'
-if yes?("Use Postgres?")
-  create_file 'config/database.yml', File.read(template_path + 'config/pg_database.yml')
-else
-  create_file 'config/database.yml', File.read(template_path + 'config/mysql_database.yml')
-end
-gsub_file 'config/database.yml', /CHANGEME/, "#{app_name.upcase}"
+  template "DEPLOYMENT.md.tt"
+  template "PROVISIONING.md.tt"
+  template "README.md.tt", :force => true
+  remove_file "README.rdoc"
 
-# Secrets
-# ==================================================
-remove_file 'config/secrets.yml'
-create_file 'config/secrets.yml', File.read(template_path + 'config/secrets.yml')
-gsub_file 'config/secrets.yml', /CHANGEME/, "#{app_name.upcase}"
+  template "example.env.tt"
+  copy_file "gitignore", ".gitignore", :force => true
+  copy_file "overcommit.yml", ".overcommit.yml"
+  template "ruby-version.tt", ".ruby-version"
+  template "ruby-gemset.tt", ".ruby-gemset"
+  copy_file "simplecov", ".simplecov"
+  copy_file "Guardfile"
 
-# Helper: title, current page highlighting in nav
-# ==================================================
-remove_file 'app/helpers/application_helper.rb'
-create_file 'app/helpers/application_helper.rb', File.read(template_path + 'helpers/application_helper.rb')
-gsub_file 'app/helpers/application_helper.rb', /CHANGEME/, "#{app_name.humanize.titleize}"
+  init_rvm
 
-# Initialize delayed_job
-# ==================================================
-generate "delayed_job:active_record"
+  apply "config.ru.rb"
 
-# Initialize guard
-# ==================================================
-run "bundle exec guard init rspec"
+  git :init unless preexisting_git_repo?
+  empty_directory ".git/safe"
 
-# Initialize CanCan
-# ==================================================
-generate "cancan:ability"
+  run "bin/setup"
+  generate_spring_binstubs
 
-# Initialize Simple Form
-# ==================================================
-generate "simple_form:install --bootstrap"
+  binstubs = %w(
+    annotate brakeman bundler-audit guard rubocop terminal-notifier
+  )
+  run "bundle binstubs #{binstubs.join(' ')}"
 
-# Initialize Friendly ID
-# ==================================================
-generate "friendly_id"
+  template "rubocop.yml.tt", ".rubocop.yml"
+  run_rubocop_autocorrections
 
-# Set up SCSS dirs and base styles 
-# ==================================================
-inside 'app/assets/stylesheets' do
-  remove_file 'application.css.scss'
-  empty_directory "modules"
-  empty_directory "partials"
-  empty_directory "vendor"
-  run "touch modules/_colors.scss, modules/_typography.scss, modules/_variables.scss"
-  run "touch partials/_common.scss, partials/_header.scss, partials/_footer.scss, partials/_nav.scss"
-  create_file 'application.scss', File.read(template_path + 'scss/application.scss')
-end
-
-# HAML: base, header, footer, nav
-# ==================================================
-inside 'app/views/layouts' do
-  remove_file 'application.html.erb'
-  create_file 'application.html.haml', File.read(template_path + 'haml/application.html.haml')
-  create_file '_footer.html.haml', File.read(template_path + 'haml/_footer.html.haml')
-  create_file '_header.html.haml', File.read(template_path + 'haml/_header.html.haml')
-  create_file '_nav.html.haml', File.read(template_path + 'haml/_nav.html.haml')
-  gsub_file 'application.html.haml', /CHANGEME/, "#{app_name.humanize.titleize}"
-  gsub_file '_nav.html.haml', /CHANGEME/, "#{app_name.upcase}"
-end
-
-# Add Users
-# ==================================================
-if yes?("Would you like to add users?")
-  generate "devise:install"
-  model_name = ask("What would you like the user model to be called? [User]")
-  model_name = "User" if model_name.blank?
-  generate "devise #{model_name} name:string:uniq"
-  rake "db:migrate"
-
-  gsub_file 'config/application.rb', /:password/, ':password, :password_confirmation'
-  insert_into_file 'config/initializers/devise.rb', "\n  config.secret_key = ENV['#{app_name.upcase}_DEVISE_SECRET_KEY']", after: "Devise.setup do |config|"
-  gsub_file 'app/models/user.rb', /:remember_me/, ':remember_me, :role_id, :avatar, :name'
-  gsub_file 'config/routes.rb', /  devise_for :users/ do <<-RUBY
-    devise_for :users
-    RUBY
-  end
-
-  gsub_file 'config/initializers/devise.rb', /please-change-me-at-config-initializers-devise@example.com/, 'CHANGEME@example.com'
-
-  inside 'app/views/devise' do
-    get template_path + 'devise/confirmations/new.html.haml', 'confirmations/new.html.haml'
-    get template_path + 'devise/mailer/confirmation_instructions.html.haml', 'mailer/confirmation_instructions.html.haml'
-    get template_path + 'devise/mailer/reset_password_instructions.html.haml', 'mailer/reset_password_instructions.html.haml'
-    get template_path + 'devise/mailer/unlock_instructions.html.haml', 'mailer/unlock_instructions.html.haml'
-    get template_path + 'devise/passwords/edit.html.haml', 'passwords/edit.html.haml'
-    get template_path + 'devise/passwords/new.html.haml', 'passwords/new.html.haml'
-    get template_path + 'devise/registrations/edit.html.haml', 'registrations/edit.html.haml'
-    get template_path + 'devise/registrations/new.html.haml', 'registrations/new.html.haml'
-    get template_path + 'devise/sessions/new.html.haml', 'sessions/new.html.haml'
-    get template_path + 'devise/shared/_links.haml', 'shared/_links.html.haml'
-    get template_path + 'devise/unlocks/new.html.haml', 'unlocks/new.html.haml'
+  unless preexisting_git_repo?
+    git :add => "-A ."
+    git :commit => "-n -m 'Set up project'"
+    git :checkout => "-b development"
+    if git_repo_specified?
+      git :remote => "add origin #{git_repo_url.shellescape}"
+      git :push => "-u origin --all"
+    end
   end
 end
 
-# Git: Initialize
-# ==================================================
-remove_file '.gitignore'
-create_file '.gitignore', File.read(template_path + "gitignore")
-git :init
-git add: "."
-git commit: %Q{ -m 'Initial commit' }
-if yes?("Initialize GitHub repository?")
-  git_uri = `git config remote.origin.url`.strip
-  unless git_uri.size == 0
-    say "Repository already exists:"
-    say "#{git_uri}"
+require "fileutils"
+require "shellwords"
+
+def add_template_repository_to_source_path
+  if __FILE__ =~ %r{\Ahttps?://}
+    source_paths.unshift(tempdir = Dir.mktmpdir("rails-template-"))
+    at_exit { FileUtils.remove_entry(tempdir) }
+    git :clone => [
+      "--quiet",
+      "https://github.com/greggparrish/rails-template.git",
+      tempdir
+    ].map(&:shellescape).join(" ")
   else
-    run "curl -u 'greggparrish' -d '{\"name\":\"#{app_name}\"}' https://api.github.com/user/repos"
-    git remote: %Q{ add origin git@github.com:greggparrish/#{app_name}.git }
-    git push: %Q{ origin master }
+    source_paths.unshift(File.dirname(__FILE__))
   end
 end
 
+def assert_minimum_rails_version
+  requirement = Gem::Requirement.new(RAILS_REQUIREMENT)
+  rails_version = Gem::Version.new(Rails::VERSION::STRING)
+  return if requirement.satisfied_by?(rails_version)
 
-# Clean
-# ==================================================
-remove_file 'README.rdoc'
-inside 'config' do
-  run "find . -type f -exec sed -i '/^\s*[@#]/ d' {} +"
-  run "find . -type f -exec sed -i '/^$/ d' {} +"
+  prompt = "This template requires Rails #{RAILS_REQUIREMENT}. "\
+           "You are using #{rails_version}. Continue anyway?"
+  exit 1 if no?(prompt)
 end
 
-# Print env variables and db commands
-# ==================================================
-say "
-  Add to .bashrc:
-  export '#{app_name.upcase}_DB_HOST'='localhost'
-  export '#{app_name.upcase}_DB_USER'='#{app_name.downcase}_user'
-  export '#{app_name.upcase}_DB_DATABASE'='#{app_name.downcase}_development'
-  export '#{app_name.upcase}_DB_PASSWORD'= 'run rake secret'
-  export '#{app_name.upcase}_DEVISE_SECRET_KEY'= 'run rake secret'
-"
+# Bail out if user has passed in contradictory generator options.
+def assert_valid_options
+  valid_options = {
+    :skip_gemfile => false,
+    :skip_bundle => false,
+    :skip_git => false,
+    :skip_test_unit => false,
+    :edge => false
+  }
+  valid_options.each do |key, expected|
+    next unless options.key?(key)
+    actual = options[key]
+    unless actual == expected
+      fail Rails::Generators::Error, "Unsupported option: #{key}=#{actual}"
+    end
+  end
+end
+
+def git_repo_url
+  @git_repo_url ||=
+    ask_with_default("What is the git remote URL for this project?", :blue, "skip")
+end
+
+def ask_with_default(question, color, default)
+  return default unless $stdin.tty?
+  question = (question.split("?") << " [#{default}]?").join
+  answer = ask(question, color)
+  answer.to_s.strip.empty? ? default : answer
+end
+
+def git_repo_specified?
+  git_repo_url != "skip" && !git_repo_url.strip.empty?
+end
+
+def init_rvm
+  run "rvm gemset create #{app_name}"
+  run "rvm gemset use #{app_name}"
+end
+
+def preexisting_git_repo?
+  @preexisting_git_repo ||= (File.exist?(".git") || :nope)
+  @preexisting_git_repo == true
+end
+
+apply_template!

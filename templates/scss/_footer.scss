@@ -1,0 +1,30 @@
+footer {
+  padding: 25px 0;
+  text-align: center;
+  background: $dark_grey;
+  span.copyright {
+    line-height: 40px;
+    text-transform: none;
+  }
+  ul.quicklinks {
+    margin-bottom: 0;
+    line-height: 40px;
+    text-transform: none;
+  }
+}
+
+ul.social-buttons {
+  margin-bottom: 0;
+  li {
+    a {
+      display: block;
+      background-color: $black;
+      height: 40px;
+      width: 40px;
+      border-radius: 100%;
+      font-size: 20px;
+      line-height: 40px;
+      color: white;
+    }
+  }
+}
