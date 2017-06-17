@@ -1,0 +1,14 @@
+%nav#mainNav.navbar.fixed-top.navbar-toggleable-md.navbar-inverse
+  .container
+    %button.navbar-toggler.navbar-toggler-right{"aria-controls" => "navbarResponsive", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarResponsive", "data-toggle" => "collapse", :type => "button"}
+      %i.fa.fa-bars
+    = link_to "<%= app_name %>", '#', class: 'navbar-brand'
+    #navbarResponsive.collapse.navbar-collapse
+      %ul.navbar-nav.ml-auto
+        %li.nav-item = link_to 'LOREM', root_path, 'link title'
+        %li.nav-item = link_to 'LOREM', root_path, 'link title'
+        %li.nav-item = link_to 'LOREM', root_path, 'link title'
+        %li.nav-item = link_to 'LOREM', root_path, 'link title'
+        %li.nav-item = link_to 'LOREM', root_path, 'link title'
+        %li.nav-item = link_to 'LOREM', root_path, 'link title'
+

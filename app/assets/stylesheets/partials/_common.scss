@@ -1,0 +1,22 @@
+body {
+  font: 100 16px $bodytext;
+  -webkit-font-smoothing: antialiased;  
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+}
+
+img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+nav.pagination {
+  border-top: 1px solid $lighter_grey;
+  border-bottom: 1px solid $lighter_grey;
+  width: 100%;
+  padding: 20px 0;
+  text-align: center;
+  span {
+    padding: 0 10px;
+  }
+}

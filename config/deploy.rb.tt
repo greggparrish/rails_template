@@ -1,0 +1,8 @@
+set :application, "<%= app_name %>"
+set :repo_url, "<%= git_repo_specified? ? git_repo_url : "TODO" %>"
+
+set :mb_dotenv_keys, %w(
+  rails_secret_key_base
+)
+
+after "deploy:published", "bundler:clean"

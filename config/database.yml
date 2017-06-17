@@ -1,0 +1,23 @@
+default: &default
+  adapter: postgresql
+  pool: 5
+  timeout: 5000
+  encoding: utf8
+  host: localhost
+  port: 5432
+development:
+  <<: *default
+  database: <%= app_name.upcase %>_DDB
+  username: <%= ENV["#{app_name}_DDB_USER"] %>
+  password: <%= ENV["#{app_name}_DDB_PASS"] %>
+test:
+  <<: *default
+  database: <%= app_name.upcase %>_TDB
+  username: <%= ENV["#{app_name}_TDB_USER"] %>
+  password: <%= ENV["#{app_name}_TDB_PASS"] %>
+production:
+  <<: *default
+  database: <%= app_name.upcase %>_PDB
+  username: <%= ENV["#{app_name}_PDB_USER"] %>
+  password: <%= ENV["#{app_name}_PDB_PASS"] %>
+
