@@ -6,3 +6,10 @@
 @mixin fade_transition {
   transition: color 0.4s ease;
 }
+
+@mixin background-cover {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}

@@ -1,14 +1,22 @@
-%nav#mainNav.navbar.fixed-top.navbar-toggleable-md.navbar-inverse
+%nav.navbar.navbar-light.bg-faded.navbar-toggleable-md
   .container
-    %button.navbar-toggler.navbar-toggler-right{"aria-controls" => "navbarResponsive", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarResponsive", "data-toggle" => "collapse", :type => "button"}
-      %i.fa.fa-bars
-    = link_to "<%= app_name %>", '#', class: 'navbar-brand'
-    #navbarResponsive.collapse.navbar-collapse
-      %ul.navbar-nav.ml-auto
-        %li.nav-item = link_to 'LOREM', root_path, 'link title'
-        %li.nav-item = link_to 'LOREM', root_path, 'link title'
-        %li.nav-item = link_to 'LOREM', root_path, 'link title'
-        %li.nav-item = link_to 'LOREM', root_path, 'link title'
-        %li.nav-item = link_to 'LOREM', root_path, 'link title'
-        %li.nav-item = link_to 'LOREM', root_path, 'link title'
+    %button.navbar-toggler.navbar-toggler-right{"aria-controls" => "containerNavbar", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#containerNavbar", "data-toggle" => "collapse", :type => "button"}
+      %span.navbar-toggler-icon
+    =link_to "<%= app_name.titleize %>", root_path
+    #containerNavbar.collapse.navbar-collapse
+      %ul.navbar-nav.mr-auto
+        %li.nav-item
+          =nav_link "Link", "#", "Link"
+        %li.nav-item
+          =nav_link "Link", "#", "Link"
+        %li.nav-item.dropdown
+          %a#dropdown01.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "http://example.com"} Dropdown
+          .dropdown-menu{"aria-labelledby" => "dropdown01"}
+            %a.dropdown-item{:href => "#"} Action
+            %a.dropdown-item{:href => "#"} Another action
+            %a.dropdown-item{:href => "#"} Something else here
+      %form.form-inline.my-2.my-md-0
+        %input.form-control.mr-sm-2{:placeholder => "Search", :type => "text"}/
+        %button.btn.btn-outline-success.my-2.my-sm-0{:type => "submit"} Search
+
 
