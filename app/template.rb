@@ -21,11 +21,12 @@ copy_file "app/assets/javascripts/application.js", force: true
 copy_file "app/controllers/static_controller.rb"
 
 ### HELPERS
-copy_file "app/helpers/application_helper.rb", force: true
+template "app/helpers/application_helper.rb.tt", force: true
 copy_file "app/helpers/retina_image_helper.rb"
 
 ### VIEWS
 copy_file "app/views/layouts/application.html.haml"
+remove_file "app/views/layouts/application.html.erb"
 remove_file "app/assets/stylesheets/application.html.erb"
 copy_file "app/views/shared/_header.html.haml"
 copy_file "app/views/shared/_footer.html.haml"
@@ -33,7 +34,8 @@ copy_file "app/views/static/home.html.haml"
 template "app/views/shared/_nav.html.haml.tt"
 
 ### PUNDIT
-insert_into_file "app/controller/application.rb",  
+insert_into_file "app/controllers/application_controller.rb", "  include Pundit\n", :before => 'end'
 empty_directory "app/policies"
-copy_file "app/policies/application_policy.rb"
+template "app/policies/application_policy.rb"
+copy_file "app/policies/static_policy.rb"
 copy_file "app/policies/user_policy.rb"
