@@ -1,9 +1,10 @@
-RAILS_REQUIREMENT = "~> 5.1.0"
+RAILS_REQUIREMENT = "~> 5.0.3"
 
 def apply_template!
   assert_minimum_rails_version
   assert_valid_options
   add_template_repository_to_source_path
+  create_db_roles
 
   template "Gemfile.tt", force: true
 
@@ -14,7 +15,6 @@ def apply_template!
 
   template "example.env.tt"
   copy_file "gitignore", ".gitignore", force: true
-  copy_file "overcommit.yml", ".overcommit.yml"
   template "ruby-version.tt", ".ruby-version"
   prepend_to_file ".ruby-version", RUBY_VERSION
   copy_file "simplecov", ".simplecov"
@@ -26,6 +26,7 @@ def apply_template!
   apply "app/template.rb"
   apply "bin/template.rb"
   apply "config/template.rb"
+  apply "db/template.rb"
   apply "doc/template.rb"
   apply "lib/template.rb"
   apply "public/template.rb"
@@ -94,6 +95,15 @@ def assert_valid_options
       fail Rails::Generators::Error, "Unsupported option: #{key}=#{actual}"
     end
   end
+end
+
+def create_db_roles
+    @dev_pass ||=
+      ask("CREATE ROLE #{app_name.parameterize}_ddb_user WITH LOGIN CREATEDB PASSWORD '';", :blue, echo: false)
+    @test_pass ||=
+      ask("\n  CREATE ROLE #{app_name.parameterize}_tdb_user WITH LOGIN CREATEDB PASSWORD '';", :blue, echo: false)
+    @prod_pass ||=
+      ask("\n  CREATE ROLE #{app_name.parameterize}_pdb_user WITH LOGIN CREATEDB PASSWORD '';", :blue, echo: false)
 end
 
 def git_repo_url

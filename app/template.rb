@@ -14,6 +14,9 @@ copy_file "app/assets/stylesheets/partials/_nav.scss"
 create_file "app/assets/stylesheets/partials/_header.scss"
 copy_file "app/assets/stylesheets/partials/_footer.scss"
 
+### JS
+copy_file "app/assets/javascripts/application.js", force: true
+
 ### CONTROLLERS
 copy_file "app/controllers/static_controller.rb"
 
@@ -28,3 +31,9 @@ copy_file "app/views/shared/_header.html.haml"
 copy_file "app/views/shared/_footer.html.haml"
 copy_file "app/views/static/home.html.haml"
 template "app/views/shared/_nav.html.haml.tt"
+
+### PUNDIT
+insert_into_file "app/controller/application.rb",  
+empty_directory "app/policies"
+copy_file "app/policies/application_policy.rb"
+copy_file "app/policies/user_policy.rb"

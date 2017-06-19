@@ -5,14 +5,23 @@ def setup!
     test "ruby -v" => ruby_version
     run  "gem install bundler --no-document --conservative"
     run  "bundle install"
-    run  "bundle exec overcommit --sign"
-    run  "bundle exec overcommit --install"
     copy "example.env"
-    copy "config/database.example.yml"
+
     test_local_env_contains_required_keys
+    run  "bin/rails g simple_form:install --bootstrap"
+
     run  "bin/rake db:create:all"
     run  "bin/rake db:migrate"
     run  "bin/rake db:seed"
+
+    run  "bin/rails g devise:install"
+    run  "bin/rails g devise user role:integer"
+    run  "bin/rake db:migrate"
+    run  "rails generate devise:views users"
+
+    run  "bin/rails generate friendly_id"
+    run  "bin/rake db:migrate"
+
   end
 end
 

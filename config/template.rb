@@ -1,7 +1,6 @@
 apply "config/application.rb"
 copy_file "config/brakeman.yml"
-copy_file "config/database.yml", force: true
-remove_file "config/database.yml"
+template "config/database.yml.tt", force: true
 remove_file "config/secrets.yml"
 
 template "config/deploy.rb.tt"
@@ -27,4 +26,4 @@ apply "config/environments/production.rb"
 apply "config/environments/test.rb"
 template "config/environments/staging.rb.tt"
 
-route 'root "home#index"'
+route 'root "static#home"'
