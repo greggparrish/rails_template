@@ -26,4 +26,5 @@ apply "config/environments/production.rb"
 apply "config/environments/test.rb"
 template "config/environments/staging.rb.tt"
 
+route 'resources :users'
 route 'root "static#home"'

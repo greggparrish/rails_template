@@ -15,7 +15,7 @@ def setup!
     run  "bin/rake db:seed"
 
     run  "bin/rails g devise:install"
-    run  "bin/rails g devise user role:integer username:string:uniq"
+    run  "bin/rails g devise user role:integer username:string:uniq slug:string:uniq"
     run  "bin/rake db:migrate"
 
     run  "bin/rake db:migrate"

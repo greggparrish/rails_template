@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
   include Pundit
   protect_from_forgery with: :exception
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-  after_filter :verify_authorized, except: :index, unless: :devise_controller?
+  after_action :verify_authorized, except: :index, unless: :devise_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   def after_sign_in_path_for(resource)

@@ -2,7 +2,7 @@
   .container
     %button.navbar-toggler.navbar-toggler-right{"aria-controls" => "containerNavbar", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#containerNavbar", "data-toggle" => "collapse", :type => "button"}
       %span.navbar-toggler-icon
-    =link_to "<%= app_name.titleize %>", root_path
+    =link_to "<%= app_name.titleize %>", root_path, class: 'navbar-brand'
     #containerNavbar.collapse.navbar-collapse
       %ul.navbar-nav.mr-auto
         %li.nav-item

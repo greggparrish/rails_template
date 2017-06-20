@@ -4,12 +4,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
 }
-
 img {
   max-width: 100%;
   max-height: 100%;
 }
-
 nav.pagination {
   border-top: 1px solid $lighter_grey;
   border-bottom: 1px solid $lighter_grey;
@@ -20,3 +18,5 @@ nav.pagination {
     padding: 0 10px;
   }
 }
+/* rm light blue border around active buttons & inputs 
+ */textarea:focus, input:focus, button:focus{  outline: none;}

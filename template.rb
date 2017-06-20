@@ -8,9 +8,6 @@ def apply_template!
 
   template "Gemfile.tt", force: true
 
-  template "DEPLOYMENT.md.tt"
-  template "PROVISIONING.md.tt"
-  template "README.md.tt", force: true
   remove_file "README.rdoc"
 
   template "example.env.tt"
@@ -22,7 +19,6 @@ def apply_template!
   copy_file "Capfile"
   copy_file "Guardfile"
 
-  apply "config.ru.rb"
   apply "bin/template.rb"
   apply "config/template.rb"
   apply "db/template.rb"
@@ -35,6 +31,8 @@ def apply_template!
 
   run_with_clean_bundler_env "bin/setup"
   generate_spring_binstubs
+
+  apply "config.ru.rb"
   apply "app/template.rb"
 
   binstubs = %w(
@@ -42,6 +40,9 @@ def apply_template!
   )
   run_with_clean_bundler_env "bundle binstubs #{binstubs.join(' ')}"
 
+  gsub_file "config/initializers/devise.rb", '# config.authentication_keys = [:email]' do
+    "config.authentication_keys = [ :login ]"
+  end
 
   unless preexisting_git_repo?
     git :add => "-A ."
