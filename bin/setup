@@ -15,15 +15,16 @@ def setup!
     run  "bin/rake db:seed"
 
     run  "bin/rails g devise:install"
-    run  "bin/rails g devise user role:integer"
+    run  "bin/rails g devise user role:integer username:string:uniq"
     run  "bin/rake db:migrate"
-    run  "rails generate devise:views users"
+
+    run  "bin/rake db:migrate"
 
     run  "bin/rails generate friendly_id"
     run  "bin/rake db:migrate"
-
   end
 end
+
 
 require "fileutils"
 begin

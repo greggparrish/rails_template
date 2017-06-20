@@ -8,8 +8,8 @@
     %meta{ :content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
     %title= full_title(yield(:title)).html_safe
     = csrf_meta_tags
-    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
     = stylesheet_link_tag 'application', '//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css'
+    = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
   %body
     = render 'shared/nav'
     = render 'shared/header'

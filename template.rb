@@ -23,7 +23,6 @@ def apply_template!
   copy_file "Guardfile"
 
   apply "config.ru.rb"
-  apply "app/template.rb"
   apply "bin/template.rb"
   apply "config/template.rb"
   apply "db/template.rb"
@@ -36,11 +35,13 @@ def apply_template!
 
   run_with_clean_bundler_env "bin/setup"
   generate_spring_binstubs
+  apply "app/template.rb"
 
   binstubs = %w(
     annotate brakeman bundler-audit guard
   )
   run_with_clean_bundler_env "bundle binstubs #{binstubs.join(' ')}"
+
 
   unless preexisting_git_repo?
     git :add => "-A ."
@@ -103,7 +104,7 @@ def create_db_roles
     @test_pass ||=
       ask("\n  CREATE ROLE #{app_name.parameterize}_tdb_user WITH LOGIN CREATEDB PASSWORD '';", :blue, echo: false)
     @prod_pass ||=
-      ask("\n  CREATE ROLE #{app_name.parameterize}_pdb_user WITH LOGIN CREATEDB PASSWORD '';", :blue, echo: false)
+      ask("\n  CREATE ROLE #{app_name.parameterize}_pdb_user WITH LOGIN CREATEDB PASSWORD '';\n", :blue, echo: false)
 end
 
 def git_repo_url
