@@ -4,6 +4,7 @@
 *.sql
 *.swp
 .capistrano
+*.env
 .rspec
 /config/
 /config/deploy.rb
@@ -13,7 +14,6 @@
 /db/*.sqlite3-journal
 /log
 /logos
-/public/uploads/client/
 /public/uploads/logo/
 /public/uploads/tmp/
 /sampleimages
@@ -46,5 +46,3 @@ bower.json
 
 # Ignore pow environment settings
 .powenv
-
-
