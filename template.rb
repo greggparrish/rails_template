@@ -22,7 +22,6 @@ def apply_template!
   apply "bin/template.rb"
   apply "config/template.rb"
   apply "db/template.rb"
-  apply "doc/template.rb"
   apply "lib/template.rb"
   apply "public/template.rb"
 
