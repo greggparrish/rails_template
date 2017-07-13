@@ -24,7 +24,9 @@ end
 apply "config/environments/development.rb"
 apply "config/environments/production.rb"
 apply "config/environments/test.rb"
+insert_into_file "config/environment.rb", "require 'carrierwave/orm/activerecord'", after: "require 'carrierwave/orm/activerecord'"
 template "config/environments/staging.rb.tt"
 
 route 'resources :users'
 route 'root "static#home"'
+
